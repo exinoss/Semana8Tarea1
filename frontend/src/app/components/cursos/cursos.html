@@ -1,0 +1,157 @@
+<div class="container-fluid py-2">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1 text-dark">Cursos</h2>
+      <p class="text-muted mb-0">Catálogo de materias disponibles</p>
+    </div>
+    <button class="btn btn-primary d-flex align-items-center shadow-sm" (click)="openModal()">
+      <i class="bi bi-journal-plus me-2"></i> Agregar Curso
+    </button>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th class="ps-4">ID</th>
+              <th>Nombre del Curso</th>
+              <th class="w-50">Descripción</th>
+              <th>Créditos</th>
+              <th class="text-end pe-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cur of cursos">
+              <td class="ps-4 text-muted fw-bold">#{{ cur.id }}</td>
+              <td class="fw-medium text-dark">{{ cur.nombreCurso }}</td>
+              <td class="text-secondary text-truncate" style="max-width: 250px">
+                {{ cur.descripcion || 'Sin descripción' }}
+              </td>
+              <td>
+                <span class="badge bg-primary rounded-pill px-3">{{ cur.creditos }}</span>
+              </td>
+              <td class="text-end pe-4">
+                <button
+                  class="btn btn-sm btn-light text-primary me-2 border"
+                  (click)="openModal(cur)"
+                  title="Editar"
+                >
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-light text-danger border"
+                  (click)="delete(cur.id)"
+                  title="Eliminar"
+                >
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="cursos.length === 0">
+              <td colspan="5" class="text-center py-5 text-muted">
+                <i class="bi bi-folder-x fs-1 d-block mb-3"></i>
+                No hay cursos registrados.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="cursoModal"
+    tabindex="-1"
+    aria-labelledby="cursoModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold" id="cursoModalLabel">
+            <i
+              class="bi"
+              [ngClass]="{
+                'bi-pencil-square text-primary': isEditMode,
+                'bi-journal-plus text-success': !isEditMode,
+              }"
+            ></i>
+            {{ isEditMode ? ' Editar' : ' Nuevo' }} Curso
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form #f="ngForm">
+            <div class="row g-3">
+              <div class="col-12">
+                <label for="nombreCurso" class="form-label text-muted fw-semibold"
+                  >Nombre del Curso</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"
+                    ><i class="bi bi-journal-text"></i
+                  ></span>
+                  <input
+                    type="text"
+                    class="form-control border-start-0 ps-0"
+                    id="nombreCurso"
+                    name="nombreCurso"
+                    [(ngModel)]="selectedCurso.nombreCurso"
+                    required
+                    placeholder="Ej. Matemáticas Discretas"
+                  />
+                </div>
+              </div>
+              <div class="col-12">
+                <label for="descripcion" class="form-label text-muted fw-semibold"
+                  >Descripción (Opcional)</label
+                >
+                <textarea
+                  class="form-control"
+                  id="descripcion"
+                  name="descripcion"
+                  [(ngModel)]="selectedCurso.descripcion"
+                  rows="3"
+                  placeholder="Detalles de la asignatura..."
+                ></textarea>
+              </div>
+              <div class="col-md-6">
+                <label for="creditos" class="form-label text-muted fw-semibold">Créditos</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"
+                    ><i class="bi bi-award"></i
+                  ></span>
+                  <input
+                    type="number"
+                    class="form-control border-start-0 ps-0"
+                    id="creditos"
+                    name="creditos"
+                    [(ngModel)]="selectedCurso.creditos"
+                    required
+                    min="1"
+                    placeholder="Ej. 3"
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-top-0 pt-0">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary px-4" (click)="save()" [disabled]="!f.valid">
+            <i class="bi bi-floppy me-2"></i> Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

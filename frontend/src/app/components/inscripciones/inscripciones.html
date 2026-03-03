@@ -1,0 +1,225 @@
+<div class="container-fluid py-2">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1 text-dark">Inscripciones</h2>
+      <p class="text-muted mb-0">Control de matriculación de estudiantes a cursos</p>
+    </div>
+    <button class="btn btn-primary d-flex align-items-center shadow-sm" (click)="openModal()">
+      <i class="bi bi-file-earmark-plus me-2"></i> Nueva Inscripción
+    </button>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th class="ps-4">ID</th>
+              <th>Estudiante</th>
+              <th>Curso</th>
+              <th>Fecha de Inscripción</th>
+              <th>Estado</th>
+              <th class="text-end pe-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ins of inscripciones">
+              <td class="ps-4 text-muted fw-bold">#{{ ins.id }}</td>
+              <td class="fw-medium text-dark">
+                <i class="bi bi-person-circle text-secondary me-2"></i>
+                {{ ins.estudiante?.nombre }} {{ ins.estudiante?.apellido }}
+              </td>
+              <td>
+                <i class="bi bi-journal-text text-secondary me-2"></i>
+                {{ ins.curso?.nombreCurso }}
+              </td>
+              <td class="text-secondary">{{ ins.fechaInscripcion | date: 'mediumDate' }}</td>
+              <td>
+                <span
+                  class="badge rounded-pill fw-medium px-3 py-2"
+                  [ngClass]="{
+                    'bg-success bg-opacity-10 text-success border border-success border-opacity-25':
+                      ins.estado === 'Activo',
+                    'bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25':
+                      ins.estado === 'Inactivo',
+                    'bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25':
+                      ins.estado === 'Completado',
+                    'bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25':
+                      ins.estado === 'Retirado',
+                  }"
+                >
+                  <i
+                    class="bi me-1"
+                    [ngClass]="{
+                      'bi-check-circle-fill': ins.estado === 'Activo',
+                      'bi-dash-circle-fill': ins.estado === 'Inactivo',
+                      'bi-award-fill': ins.estado === 'Completado',
+                      'bi-x-circle-fill': ins.estado === 'Retirado',
+                    }"
+                  ></i>
+                  {{ ins.estado }}
+                </span>
+              </td>
+              <td class="text-end pe-4">
+                <button
+                  class="btn btn-sm btn-light text-primary me-2 border shadow-none"
+                  (click)="openModal(ins)"
+                  title="Editar"
+                >
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-light text-danger border shadow-none"
+                  (click)="delete(ins.id)"
+                  title="Eliminar"
+                >
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="inscripciones.length === 0">
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-clipboard-x fs-1 d-block mb-3"></i>
+                No hay inscripciones registradas.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="inscripcionModal"
+    tabindex="-1"
+    aria-labelledby="inscripcionModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold" id="inscripcionModalLabel">
+            <i
+              class="bi"
+              [ngClass]="{
+                'bi-pencil-square text-primary': isEditMode,
+                'bi-file-earmark-plus text-success': !isEditMode,
+              }"
+            ></i>
+            {{ isEditMode ? ' Editar' : ' Nueva' }} Inscripción
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form #f="ngForm">
+            <div class="row g-3">
+              <div class="col-12">
+                <label for="estudianteId" class="form-label text-muted fw-semibold"
+                  >Estudiante</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"
+                    ><i class="bi bi-person"></i
+                  ></span>
+                  <select
+                    class="form-select border-start-0 ps-0"
+                    id="estudianteId"
+                    name="estudianteId"
+                    [(ngModel)]="selectedInscripcion.estudianteId"
+                    required
+                  >
+                    <option value="0" disabled selected>-- Seleccione un estudiante --</option>
+                    <option *ngFor="let est of estudiantes" [value]="est.id">
+                      {{ est.nombre }} {{ est.apellido }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-12">
+                <label for="cursoId" class="form-label text-muted fw-semibold">Curso</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"
+                    ><i class="bi bi-journal-text"></i
+                  ></span>
+                  <select
+                    class="form-select border-start-0 ps-0"
+                    id="cursoId"
+                    name="cursoId"
+                    [(ngModel)]="selectedInscripcion.cursoId"
+                    required
+                  >
+                    <option value="0" disabled selected>-- Seleccione un curso --</option>
+                    <option *ngFor="let cur of cursos" [value]="cur.id">
+                      {{ cur.nombreCurso }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="fechaInscripcion" class="form-label text-muted fw-semibold"
+                  >Fecha de Inscripción</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"
+                    ><i class="bi bi-calendar-check"></i
+                  ></span>
+                  <input
+                    type="date"
+                    class="form-control border-start-0 ps-0"
+                    id="fechaInscripcion"
+                    name="fechaInscripcion"
+                    [(ngModel)]="selectedInscripcion.fechaInscripcion"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="estado" class="form-label text-muted fw-semibold">Estado Activo</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"
+                    ><i class="bi bi-activity"></i
+                  ></span>
+                  <select
+                    class="form-select border-start-0 ps-0 fw-medium"
+                    id="estado"
+                    name="estado"
+                    [(ngModel)]="selectedInscripcion.estado"
+                    required
+                  >
+                    <option value="Activo" class="text-success">Activo</option>
+                    <option value="Inactivo" class="text-secondary">Inactivo</option>
+                    <option value="Completado" class="text-primary">Completado</option>
+                    <option value="Retirado" class="text-danger">Retirado</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-top-0 pt-0">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button
+            type="button"
+            class="btn btn-primary px-4"
+            (click)="save()"
+            [disabled]="
+              !f.valid ||
+              selectedInscripcion.estudianteId === 0 ||
+              selectedInscripcion.cursoId === 0
+            "
+          >
+            <i class="bi bi-floppy me-2"></i> Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

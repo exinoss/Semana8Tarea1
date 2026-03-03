@@ -1,0 +1,171 @@
+<div class="container-fluid py-2">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1 text-dark">Estudiantes</h2>
+      <p class="text-muted mb-0">Gestión de alumnos inscritos en el sistema</p>
+    </div>
+    <button class="btn btn-primary d-flex align-items-center shadow-sm" (click)="openModal()">
+      <i class="bi bi-plus-lg me-2"></i> Agregar Estudiante
+    </button>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th class="ps-4">ID</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Email</th>
+              <th>Fecha de Nacimiento</th>
+              <th class="text-end pe-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let est of estudiantes">
+              <td class="ps-4 text-muted fw-bold">#{{ est.id }}</td>
+              <td>{{ est.nombre }}</td>
+              <td>{{ est.apellido }}</td>
+              <td class="text-primary">{{ est.email }}</td>
+              <td>{{ est.fechaNacimiento | date: 'mediumDate' }}</td>
+              <td class="text-end pe-4">
+                <button
+                  class="btn btn-sm btn-light text-primary me-2 border"
+                  (click)="openModal(est)"
+                  title="Editar"
+                >
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-light text-danger border"
+                  (click)="delete(est.id)"
+                  title="Eliminar"
+                >
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="estudiantes.length === 0">
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                No hay estudiantes registrados.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="estudianteModal"
+    tabindex="-1"
+    aria-labelledby="estudianteModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold" id="estudianteModalLabel">
+            <i
+              class="bi"
+              [ngClass]="{
+                'bi-pencil-square text-primary': isEditMode,
+                'bi-person-plus text-success': !isEditMode,
+              }"
+            ></i>
+            {{ isEditMode ? ' Editar' : ' Nuevo' }} Estudiante
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form #f="ngForm">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="nombre" class="form-label text-muted fw-semibold">Nombre</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"
+                    ><i class="bi bi-person"></i
+                  ></span>
+                  <input
+                    type="text"
+                    class="form-control border-start-0 ps-0"
+                    id="nombre"
+                    name="nombre"
+                    [(ngModel)]="selectedEstudiante.nombre"
+                    required
+                    placeholder="Ej. Juan"
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="apellido" class="form-label text-muted fw-semibold">Apellido</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="apellido"
+                  name="apellido"
+                  [(ngModel)]="selectedEstudiante.apellido"
+                  required
+                  placeholder="Ej. Pérez"
+                />
+              </div>
+              <div class="col-12">
+                <label for="email" class="form-label text-muted fw-semibold"
+                  >Correo Electrónico</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"
+                    ><i class="bi bi-envelope"></i
+                  ></span>
+                  <input
+                    type="email"
+                    class="form-control border-start-0 ps-0"
+                    id="email"
+                    name="email"
+                    [(ngModel)]="selectedEstudiante.email"
+                    required
+                    placeholder="ejemplo@correo.com"
+                  />
+                </div>
+              </div>
+              <div class="col-12">
+                <label for="fechaNacimiento" class="form-label text-muted fw-semibold"
+                  >Fecha de Nacimiento</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"
+                    ><i class="bi bi-calendar-event"></i
+                  ></span>
+                  <input
+                    type="date"
+                    class="form-control border-start-0 ps-0"
+                    id="fechaNacimiento"
+                    name="fechaNacimiento"
+                    [(ngModel)]="selectedEstudiante.fechaNacimiento"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-top-0 pt-0">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary px-4" (click)="save()" [disabled]="!f.valid">
+            <i class="bi bi-floppy me-2"></i> Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
