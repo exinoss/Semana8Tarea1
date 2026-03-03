@@ -136,8 +136,8 @@
                     [(ngModel)]="selectedInscripcion.estudianteId"
                     required
                   >
-                    <option value="0" disabled selected>-- Seleccione un estudiante --</option>
-                    <option *ngFor="let est of estudiantes" [value]="est.id">
+                    <option [ngValue]="0" disabled selected>-- Seleccione un estudiante --</option>
+                    <option *ngFor="let est of estudiantes" [ngValue]="est.id">
                       {{ est.nombre }} {{ est.apellido }}
                     </option>
                   </select>
@@ -156,8 +156,8 @@
                     [(ngModel)]="selectedInscripcion.cursoId"
                     required
                   >
-                    <option value="0" disabled selected>-- Seleccione un curso --</option>
-                    <option *ngFor="let cur of cursos" [value]="cur.id">
+                    <option [ngValue]="0" disabled selected>-- Seleccione un curso --</option>
+                    <option *ngFor="let cur of cursos" [ngValue]="cur.id">
                       {{ cur.nombreCurso }}
                     </option>
                   </select>
